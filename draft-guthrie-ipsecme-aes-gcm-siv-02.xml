@@ -1,0 +1,224 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- This template is for creating an Internet Draft using xml2rfc,
+    which is available here: http://xml.resource.org. -->
+
+<!-- used by XSLT processors -->
+<!-- For a complete list and description of processing instructions (PIs), 
+    please see http://xml.resource.org/authoring/README.html. -->
+<rfc
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      category="std"
+      docName="draft-guthrie-ipsecme-aes-gcm-siv-02"
+      ipr="trust200902"
+      obsoletes=""
+      updates=""
+      submissionType="IETF"
+      xml:lang="en"
+      tocInclude="true"
+      tocDepth="4"
+      symRefs="true"
+      sortRefs="true"
+      version="3"
+	  consensus="true">
+  <!-- xml2rfc v2v3 conversion 2.38.1 -->
+  <!-- category values: std, bcp, info, exp, and historic
+    ipr values: trust200902, noModificationTrust200902, noDerivativesTrust200902,
+       or pre5378Trust200902
+    you can add the attributes updates="NNNN" and obsoletes="NNNN" 
+    they will automatically be output with "(if approved)" -->
+
+ <!-- ***** FRONT MATTER ***** -->
+
+ <front>
+    <!-- The abbreviated title is used in the page header - it is only necessary if the 
+        full title is longer than 39 characters -->
+
+   <title abbrev="Using AES-GCM-SIV in IKEv2 and ESP">Using AES-GCM-SIV in the Internet Protocol Version 2 (IKEv2) and Encapsulating Security Payload (ESP) Protocols</title>
+    <seriesInfo name="Internet-Draft" value="draft-guthrie-ipsecme-aes-gcm-siv-02"/>
+    <!-- add 'role="editor"' below for the editors if appropriate -->
+
+   <!-- Another author who claims to be an editor -->
+
+    <author fullname="Rebecca Guthrie" initials="R." surname="Guthrie">
+      <organization> </organization>
+      <address>
+        <email>rguthrie13245@proton.me</email>
+      </address>
+    </author>
+	
+	<author fullname="Nicholas Gajcowski" initials="N." surname="Gajcowski">
+	  <organization abbrev="NSA">National Security Agency</organization>
+	  <address>
+	    <email>nhgajco@uwe.nsa.gov</email>
+	  </address>
+	</author>
+		
+	<author fullname="Casey Wynn" initials="C." surname="Wynn">
+	  <organization abbrev="NSA">National Security Agency</organization>
+	  <address>
+	    <email>cwwynn@uwe.nsa.gov</email>
+	  </address>
+	</author>
+	
+
+
+
+    <date year="2026"/>
+    <!-- If the month and year are both specified and are the current ones, xml2rfc will fill 
+        in the current day for you. If only the current year is specified, xml2rfc will fill 
+	 in the current day and month for you. If the year is not the current one, it is 
+	 necessary to specify at least a month (xml2rfc assumes day="1" if not specified for the 
+	 purpose of calculating the expiry date).  With drafts it is normally sufficient to 
+	 specify just the year. -->
+
+   <!-- Meta-data Declarations -->
+
+
+   <abstract>
+      <t>This document specifies the use of AES-GCM-SIV in the Internet Key Exchange Protocol version 2 (IKEv2) and the Encapsulating Security Payload (ESP) protocols. This document also adds AES-GCM-SIV to the IANA IKEv2 registry for "Transform Type 1 - Encryption Algorithm Transform IDs." AES-GCM-SIV is a nonce misuse-resistant authenticated encryption with associated data (AEAD) algorithm based on AES-GCM.</t>
+   </abstract>
+  </front>
+  
+  <middle>
+  
+    <section numbered="true" toc="default">
+      <name>Introduction</name>
+	    <t>An authenticated encryption with associated data (AEAD) algorithm combines encryption and integrity into a single operation and returns ciphertext and an integrity check value (ICV) (also called an authentication tag) over the plaintext or ciphertext and the associated/additional data. A commonly used AEAD algorithm is AES-GCM (the Advanced Encryption Standard (AES) block cipher used in Galois/Counter mode)(GCM) <xref target="SP-800-38D"/>, which offers certain performance advantages over other AES-based options that also provide both confidentiality and message authentication. However, AES-GCM fails catastrophically (i.e., exposes the authentication key) when two different plaintext messages are encrypted with the same key and nonce. While specifications of AES-GCM require a unique nonce per message, this can be difficult to guarantee in practice due to poor random number generation or failure to keep track of state, either of which can result in a nonce repeating. Because of this, <xref target="RFC4106" /> disallows use of AES-GCM in ESP with statically configured keys and requires use of IKE or other automated key management system.</t>
+		<t>As a remedy, this document specifies the use of AES-GCM-SIV (<xref target="RFC8452" />) in ESP as well as IKE. AES-GCM-SIV, being a nonce-misuse-resistant AEAD, prevents the failure noted above. In particular, when two messages are encrypted using the same AES-GCM-SIV nonce and key, the ICV/authentication tag associated with each message can only reveal whether it is probable that the two messages are equal. This document does not encourage repeated use of a nonce. Instead, it aims to enhance security and, like <xref target="RFC8452" />, it recommends that nonces be randomly generated. This document also adds AES-GCM-SIV to the IANA IKEv2 registry for "Transform Type 1 - Encryption Algorithm Transform IDs."</t>
+	
+	  <section numbered="true" toc="default"> 
+	    <name>Conventions Used in This Document</name> 
+	      <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 <xref target="RFC2119"/> <xref target="RFC8174" /> when, and only when, they appear in all capitals, as shown here.</t>
+	  </section>
+	 </section>
+	
+	<section numbered="true" toc="default">
+	  <name>AES-GCM-SIV Overview</name>
+		  <t>Though AES-GCM-SIV is based on AES-GCM, there are several key differences between the two algorithms; these differences prevent the specifications for AES-GCM in IKEv2 and ESP from directly supporting AES-GCM-SIV. This section gives an overview of these differences and highlights how these differences manifest in the IKEv2 and ESP protocols.</t>
+		  <t>The typical nonce construction for AES-GCM in IKEv2 and ESP is called "partially implicit" (Section 4 of <xref target="RFC5282" />). It consists of a four-octet salt that is part of the IKEv2 keying material shared between parties (this is the implicit portion), followed by the eight-octet Initialization Vector (IV) included in the Encrypted payload (this is the explicit portion; hence "partially" implicit). It is required that the IV be eight octets and chosen in such a way that is only used once. Note in particular that the IV is defined as a component of this partially implicit nonce.</t>
+		  <t>In contrast, the AES-GCM-SIV nonce is a component of the synthetic IV (SIV). Unlike the IV construction in <xref target="RFC5282" />, the SIV is a function of all the AEAD inputs: the 12-octet nonce, the key-generating key, the plaintext, and the associated data. For AES-GCM-SIV, the nonce is random, and does not contain a salt. Specifically, there is no need for a salt because the SIV is already a function of keying material (through the incorporation of the key-generating key).</t>
+		  <t>Because of these structural differences, IKEv2 and ESP fields specified for AES-GCM nonce and IV cannot be used for the AES-GCM-SIV nonce and SIV without modification.</t>
+		  <t>While the AES-GCM ciphertext (as described in <xref target="RFC5282" />) and AES-GCM-SIV ciphertext both include an authentication tag, the authentication tag for AES-GCM can be 8, 12, or 16 octets. In contrast, the authentication tag for AES-GCM-SIV <bcp14>MUST</bcp14> be 16 octets. This is because the AES-GCM-SIV authentication tag is needed to decrypt the ciphertext, so it must be transmitted in full (i.e., not truncated).</t>
+    </section>
+	
+	<section numbered="true" toc="default">
+	  <name>AES-GCM-SIV in IKEv2</name>
+	  <t>The Internet Key Exchange version 2 <xref target="RFC7296" /> protocol is a component of IPsec <xref target="RFC4301" /> that establishes a Security Association (SA) with a shared session secret from which cryptographic keys are derived. This SA can facilitate the establishment of further SAs for Encapsulating Security Payload (ESP) <xref target="RFC4303" /> or Authentication Header <xref target="RFC4302" />, and the cryptographic keys are used to protect the traffic carried by each SA. <xref target="RFC7296" /> specifies generally how to negotiate and use cryptographic algorithms that provide properties such as encryption and integrity of the IKE SA. <xref target="RFC5282" /> specifies how to use AES-GCM as a Transform Type 1 algorithm to provide both encryption and integrity to the IKEv2 SA. This section specifies how to use AES-GCM-SIV for the same purpose and uses portions of <xref target="RFC5282" /> as a baseline.</t>
+	  <section numbered="true" toc="default">
+	    <name>IKEv2 Encrypted Payload Data</name>
+		<t>The Encrypted payload (Section 3.14 of <xref target="RFC7296" />) contains all the payloads of a given IKEv2 message in encrypted form. Section 3 (or Figure 1) of <xref target="RFC5282" /> updates the format of the Encrypted payload as depicted in Figure 21 of <xref target="RFC7296" /> in the case that one of the authenticated encryption algorithms AES-GCM or AES-CCM are used. This updated format contains two fields: an 8-octet Initialization Vector field followed by a variable-length Ciphertext field.</t> 
+		<t>The Encrypted payload format for AES-GCM-SIV aligns with the modified format from <xref target="RFC5282" /> with one exception: instead of an Initialization Vector field, the AES-GCM-SIV Encrypted payload format includes a Nonce field in its place.</t>
+		<t>Then, the Encrypted payload has the following structure:</t>
+		<ul spacing="normal">
+		<li>Nonce: a twelve-octet AES-GCM-SIV nonce, followed by</li>
+		<li>Ciphertext: a variable-length ciphertext.</li>
+		</ul>
+		<t>The Nonce field contains a randomly-generated 96-bit (12-octet) value.</t>
+		<t>[EDNOTE: Is it acceptable to rename the IV field to Nonce, or should this guidance use the same field name and just clarify that the IV field contains the nonce instead of IV?]</t>
+		<t>The Ciphertext field contains the ciphertext as specified by <xref target="RFC8452" />. The ciphertext as specified by <xref target="RFC8452" /> contains a 16-octet authentication tag, making it 16 octets longer than the corresponding plaintext. While the AES-GCM ciphertext (as described in <xref target="RFC5282" />) and AES-GCM-SIV ciphertext both include an authentication tag, the authentication tag for AES-GCM can be 8, 12, or 16 octets. In contrast, the authentication tag for AES-GCM-SIV <bcp14>MUST</bcp14> be 16 octets. For both AES-GCM and AES-GCM-SIV, the presence of the authentication tag in the Ciphertext field makes it so that a separate Integrity Check Value field in the Encrypted payload is not needed. Note that the ciphertext calculation inputs described in Section 3 of <xref target="RFC5282" /> differ from the inputs used for the AES-GCM-SIV ciphertext calculation.</t>
+	  </section>
+	  <section numbered="true" toc="default">
+	    <name>IKEv2 Keying Material</name>
+		<t>Parties in IKEv2 generate a quantity called SKEYSEED from which all keys used in the IKEv2 SA are derived (Section 2.14 of <xref target="RFC7296" />).</t>
+		<t>AES-GCM-SIV uses one of these keys, SK_e[i/r], as a key-generating key from which to derive further keying material. SK_e[i/r] is either 128 or 256 bits, depending on whether AES-128 or AES-256 is in use. In particular, the key-generating key and the 96-bit nonce are used to derive a 128-bit message-authentication key and either a 128-bit or 256-bit (consistent with the length of the key-generating key, for use in AES-128 or AES-256 respectively) message-encryption key (see Section 4 of <xref target="RFC8452" />).</t>
+		<t>Note that this process differs from the encryption method employed by AES-GCM, in which (SK_e[i/r]) is used directly (instead of being used first to generate a message-encryption key).</t>
+		<t>The authentication keys SK_a[i/r] from SKEYSEED are treated as having a length of zero octets and are not used, consistent with the treatment of SK_a[i/r] for AES-GCM by Section 7.1 of <xref target="RFC5282" />.</t>
+	  </section>
+	  <section numbered="true" toc="default">
+	    <name>Associated Data Construction</name>
+		<t>The construction of the associated data for AES-GCM-SIV (referred to as "additional data" by <xref target="RFC8452" />) is as specified for AES-GCM in Section 5.1 of <xref target="RFC5282" />.</t>
+	  </section>
+	</section>
+	
+	<section numbered="true" toc="default">
+	  <name>AES-GCM-SIV in ESP</name>
+	  <t>
+	  </t>
+	  <section numbered="true" toc="default">
+	    <name>ESP Payload Data</name>
+	    <t>ESP packets contain a variable-length field, called Payload Data <xref target="RFC4303" />. The format of the Payload Data field is dependent upon the encryption algorithm being used. In the case of AES-GCM-SIV, the ESP Payload Data field is composed of two subfields:</t>
+		<ul spacing="normal">
+		<li>Nonce: a twelve-octet AES-GCM-SIV nonce, followed by</li>
+		<li>Ciphertext: a variable-length ciphertext.</li>
+		</ul>
+		<t>The Nonce field contains a randomly-generated 96-bit (12-octet) value.</t>
+		<t>Note that the nonce is akin to the 8-octet Initialization Vector shown in Figure 1 of <xref target="RFC4106" />.</t>
+		<t>The instantiation of the Ciphertext field is consistent with the specification for AES-GCM in Section 3.2 of <xref target="RFC4106" />. Note that while the AES-GCM-SIV ciphertext as per <xref target="RFC8452" /> contains a 16-octet authentication tag at the end, this tag <bcp14>MUST NOT</bcp14> be included in the Ciphertext field here; it is instead included as the Integrity Check Value (discussed in Section 4.2).</t>
+		<t>[EDNOTE: Is this the preferred way to format AEADs for ESP (vs. including the authentication tag in the Ciphertext field and leaving the ICV field empty)? It seems to be what other RFCs have done.]</t>	
+	  </section>
+	  <section numbered="true" toc="default">
+	    <name>ESP Integrity Check Value (ICV)</name>
+	    <t>The ESP Packet Format depicted in Figure 1 of <xref target="RFC4303" /> includes a variable-length Integrity Check Value (ICV) field.</t>
+		<t>This field contains the AES-GCM-SIV 16-octet authentication tag (i.e., the last 16 octets of the AES-GCM-SIV ciphertext.</t>
+		<t>The ICV is the 16-octet AES-GCM-SIV Authentication Tag.</t>	
+	  </section>
+	  <section numbered="true" toc="default">
+	    <name>ESP Keying Material</name>
+	    <t>The transform keys are extracted from the KEYMAT as defined in Section 2.17 of <xref target="RFC7296" />. When AES-GCM-SIV with AES-128 is used, 16 octets are extracted; when AES-GCM-SIV with AES-256 is used, 32 octets are extracted.</t>
+	  </section>
+	  <section numbered="true" toc="default">
+	    <name>Additional Authenticated Data Construction</name>
+	    <t>The construction of the Additional Authenticated Data (AAD) for AES-GCM-SIV is as specified for AES-GCM in Section 5 of <xref target="RFC4106" />.</t>
+	  </section>
+	</section>
+
+	<section numbered="true" toc="default">
+	  <name>Security Considerations</name>
+	  <t>This document inherits the security considerations of <xref target="RFC8452" />.</t>
+	</section>
+
+	<section numbered="true" toc="default">
+	  <name>Operational Considerations</name>
+	  <t>Implementers of IPsec may assess the benefits and drawbacks of using AES-GCM-SIV in a given deployment scenario versus another AEAD algorithm. While AES-GCM-SIV decryption speed is comparable to that of AES-GCM, its encryption runs at about two thirds the speed of AES-GCM encryption. Because of this, it is not prudent to view AES-GCM-SIV as a blanket replacement for AES-GCM. <xref target="RFC8452" /> recommends that AES-GCM-SIV be used in any scenario where nonce uniqueness cannot be guaranteed, such as when there is no stateful counter, or when multiple encryptors use the same key.</t>
+	</section>
+
+	<section anchor="app-additional" numbered="true" toc="default">
+      <name>IANA Considerations</name>
+	  <t>This document adds the following algorithm to the IANA "Transform Type 1 - Encryption Algorithm Transform IDs" registry for use in both IKEv2 and ESP:</t>
+	  <artwork name="" type="" align="left" alt=""><![CDATA[
+	  +--------------------------------+
+	  | Number  | Name                 |
+	  +--------------------------------|
+	  | TBD     | ENCR_AES_GCM_SIV_16  |
+	  +--------------------------------+  
+	  ]]></artwork>
+	</section>
+	
+</middle>
+<back>	
+   <references>
+      <name>References</name>
+	  <references>
+      <name>Normative References</name>
+	  
+	  <reference anchor="SP-800-38D" target="http://csrc.nist.gov/publications/nistpubs/800-38D/SP-800-38D.pdf">
+        <front>
+          <title>
+            Recommendation for Block Cipher Modes of Operation: Galois/Counter Mode (GCM) and GMAC
+          </title>
+          <author initials="M." surname="Dworkin" fullname="M. Dworkin">
+            <organization/>
+          </author>
+          <date year="2007" month="November"/>
+        </front>
+        <seriesInfo name="NIST" value="SP-800-38D"/>
+      </reference>
+
+	  <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml"/>
+	  <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.4106.xml"/>	  
+	  <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.4301.xml"/>	  
+	  <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.4303.xml"/>		  
+	  <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.5282.xml"/>
+	  <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.7296.xml"/>  
+	  <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.8174.xml"/>
+	  <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.8452.xml"/>
+	  </references>
+	  <references>
+	  <name>Informative References</name>
+	  <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.4302.xml"/>
+	  </references>
+   </references>
+</back>	
+</rfc>
+	
+ 
