@@ -163,6 +163,12 @@
 	</section>
 
 	<section numbered="true" toc="default">
+	  <name>IKE Conventions</name>
+	  <t>Because AES-GCM-SIV supports two key lengths (128 and 256 bits), the Key Length attribute MUST be specified in the IKE Phase 2 exchange <xref target="RFC7296" />.
+             The Key Length attribute MUST have a value of 128 or 256.</t>
+	</section>
+
+	<section numbered="true" toc="default">
 	  <name>Security Considerations</name>
 	  <t>This document inherits the security considerations of <xref target="RFC8452" />.</t>
 	</section>
