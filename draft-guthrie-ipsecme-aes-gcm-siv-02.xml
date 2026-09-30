@@ -138,13 +138,11 @@
 	    <name>ESP Payload Data</name>
 	    <t>ESP packets contain a variable-length field, called Payload Data <xref target="RFC4303" />. The format of the Payload Data field is dependent upon the encryption algorithm being used. In the case of AES-GCM-SIV, the ESP Payload Data field is composed of two subfields:</t>
 		<ul spacing="normal">
-		<li>Nonce: a twelve-octet AES-GCM-SIV nonce, followed by</li>
+		<li>IV: a twelve-octet AES-GCM-SIV nonce, followed by</li>
 		<li>Ciphertext: a variable-length ciphertext.</li>
 		</ul>
-		<t>The Nonce field contains a randomly-generated 96-bit (12-octet) value.</t>
-		<t>Note that the nonce is akin to the 8-octet Initialization Vector shown in Figure 1 of <xref target="RFC4106" />.</t>
-		<t>The instantiation of the Ciphertext field is consistent with the specification for AES-GCM in Section 3.2 of <xref target="RFC4106" />. Note that while the AES-GCM-SIV ciphertext as per <xref target="RFC8452" /> contains a 16-octet authentication tag at the end, this tag <bcp14>MUST NOT</bcp14> be included in the Ciphertext field here; it is instead included as the Integrity Check Value (discussed in Section 4.2).</t>
-		<t>[EDNOTE: Is this the preferred way to format AEADs for ESP (vs. including the authentication tag in the Ciphertext field and leaving the ICV field empty)? It seems to be what other RFCs have done.]</t>	
+		<t>The IV field contains a randomly-generated 96-bit (12-octet) value, and is the value presented to the AES-GCM-SIV implementation as the nonce.</t>
+		<t>The instantiation of the Ciphertext field is consistent with the specification for AES-GCM in Section 3.2 of <xref target="RFC4106" />. This field consists of the AES-GCM-SIV ciphertext as per <xref target="RFC8452" />, followed by the 16-octet authentication tag at the end.</t>	
 	  </section>
 	  <section numbered="true" toc="default">
 	    <name>ESP Integrity Check Value (ICV)</name>
