@@ -107,15 +107,14 @@
 	  <section numbered="true" toc="default">
 	    <name>IKEv2 Encrypted Payload Data</name>
 		<t>The Encrypted payload (Section 3.14 of <xref target="RFC7296" />) contains all the payloads of a given IKEv2 message in encrypted form. Section 3 (or Figure 1) of <xref target="RFC5282" /> updates the format of the Encrypted payload as depicted in Figure 21 of <xref target="RFC7296" /> in the case that one of the authenticated encryption algorithms AES-GCM or AES-CCM are used. This updated format contains two fields: an 8-octet Initialization Vector field followed by a variable-length Ciphertext field.</t> 
-		<t>The Encrypted payload format for AES-GCM-SIV aligns with the modified format from <xref target="RFC5282" /> with one exception: instead of an Initialization Vector field, the AES-GCM-SIV Encrypted payload format includes a Nonce field in its place.</t>
+		<t>The Encrypted payload format for AES-GCM-SIV aligns with the modified format from <xref target="RFC5282" /> with one exception: the Initialization Vector field is now 12-octets in length, which is the value of the AES-GCM-SIV nonce.</t>
 		<t>Then, the Encrypted payload has the following structure:</t>
 		<ul spacing="normal">
-		<li>Nonce: a twelve-octet AES-GCM-SIV nonce, followed by</li>
-		<li>Ciphertext: a variable-length ciphertext.</li>
+		<li>Initialization Vector: a twelve-octet randomly-generated AES-GCM-SIV nonce, followed by</li>
+		<li>Ciphertext: a variable-length ciphertext, which does include the 16-octet tag</li>
 		</ul>
 		<t>The Nonce field contains a randomly-generated 96-bit (12-octet) value.</t>
-		<t>[EDNOTE: Is it acceptable to rename the IV field to Nonce, or should this guidance use the same field name and just clarify that the IV field contains the nonce instead of IV?]</t>
-		<t>The Ciphertext field contains the ciphertext as specified by <xref target="RFC8452" />. The ciphertext as specified by <xref target="RFC8452" /> contains a 16-octet authentication tag, making it 16 octets longer than the corresponding plaintext. While the AES-GCM ciphertext (as described in <xref target="RFC5282" />) and AES-GCM-SIV ciphertext both include an authentication tag, the authentication tag for AES-GCM can be 8, 12, or 16 octets. In contrast, the authentication tag for AES-GCM-SIV <bcp14>MUST</bcp14> be 16 octets. For both AES-GCM and AES-GCM-SIV, the presence of the authentication tag in the Ciphertext field makes it so that a separate Integrity Check Value field in the Encrypted payload is not needed. Note that the ciphertext calculation inputs described in Section 3 of <xref target="RFC5282" /> differ from the inputs used for the AES-GCM-SIV ciphertext calculation.</t>
+		<t>The Ciphertext field contains the ciphertext as specified by <xref target="RFC8452" />. The ciphertext as specified by <xref target="RFC8452" /> contains a 16-octet authentication tag, making it 16 octets longer than the corresponding plaintext. While the AES-GCM ciphertext (as described in <xref target="RFC5282" />) and AES-GCM-SIV ciphertext both include an authentication tag, the authentication tag for AES-GCM can be 8, 12, or 16 octets. In contrast, the authentication tag for AES-GCM-SIV <bcp14>MUST</bcp14> be 16 octets. For both AES-GCM and AES-GCM-SIV, the presence of the authentication tag in the Ciphertext field makes it so that a separate Integrity Check Value field in the Encrypted payload is not needed.</t>
 	  </section>
 	  <section numbered="true" toc="default">
 	    <name>IKEv2 Keying Material</name>
