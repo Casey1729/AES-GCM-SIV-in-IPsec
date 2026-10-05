@@ -38,7 +38,18 @@
     <!-- add 'role="editor"' below for the editors if appropriate -->
 
    <!-- Another author who claims to be an editor -->
+	<author fullname="Casey Wynn" initials="C." surname="Wynn">
+	  <organization abbrev="NSA">National Security Agency</organization>
+	  <address>
+	    <email>cwwynn@uwe.nsa.gov</email>
+	  </address>
 
+	<author fullname="Scott Fluhrer" initials="S." surname="Fluhrer">
+	  <organization abbrev="Cisco Systems">Cisco Systems</organization>
+	  <address>
+	    <email>sfluhrer@cisco.com</email>
+	  </address>
+		
     <author fullname="Rebecca Guthrie" initials="R." surname="Guthrie">
       <organization> </organization>
       <address>
@@ -53,11 +64,7 @@
 	  </address>
 	</author>
 		
-	<author fullname="Casey Wynn" initials="C." surname="Wynn">
-	  <organization abbrev="NSA">National Security Agency</organization>
-	  <address>
-	    <email>cwwynn@uwe.nsa.gov</email>
-	  </address>
+
 	</author>
 	
 
