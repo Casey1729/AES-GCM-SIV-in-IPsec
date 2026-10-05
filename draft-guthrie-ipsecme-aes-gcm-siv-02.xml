@@ -43,12 +43,14 @@
 	  <address>
 	    <email>cwwynn@uwe.nsa.gov</email>
 	  </address>
+    </author>
 
 	<author fullname="Scott Fluhrer" initials="S." surname="Fluhrer">
 	  <organization abbrev="Cisco Systems">Cisco Systems</organization>
 	  <address>
 	    <email>sfluhrer@cisco.com</email>
 	  </address>
+    </author>
 		
     <author fullname="Rebecca Guthrie" initials="R." surname="Guthrie">
       <organization> </organization>
@@ -63,12 +65,6 @@
 	    <email>nhgajco@uwe.nsa.gov</email>
 	  </address>
 	</author>
-		
-
-	</author>
-	
-
-
 
     <date year="2026"/>
     <!-- If the month and year are both specified and are the current ones, xml2rfc will fill 
