@@ -179,13 +179,15 @@
 
 	<section anchor="app-additional" numbered="true" toc="default">
       <name>IANA Considerations</name>
-	  <t>This document adds the following algorithm to the IANA "Transform Type 1 - Encryption Algorithm Transform IDs" registry for use in both IKEv2 and ESP:</t>
+	  <t>This document adds the following algorithms to the IANA "Transform Type 1 - Encryption Algorithm Transform IDs" registry for use in both IKEv2 and ESP:</t>
 	  <artwork name="" type="" align="left" alt=""><![CDATA[
 	  +--------------------------------+
 	  | Number  | Name                 |
 	  +--------------------------------|
-	  | TBD     | ENCR_AES_GCM_SIV_16  |
-	  +--------------------------------+  
+	  | TBD     | ENCR_AES_128_GCM_SIV |
+	  +--------------------------------+ 
+ 	  | TBD     | ENCR_AES_256_GCM_SIV |
+	  +--------------------------------+ 
 	  ]]></artwork>
 	</section>
 	
