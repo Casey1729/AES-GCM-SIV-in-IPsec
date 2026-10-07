@@ -58,13 +58,6 @@
         <email>rguthrie13245@proton.me</email>
       </address>
     </author>
-	
-	<author fullname="Nicholas Gajcowski" initials="N." surname="Gajcowski">
-	  <organization abbrev="NSA">National Security Agency</organization>
-	  <address>
-	    <email>nhgajco@uwe.nsa.gov</email>
-	  </address>
-	</author>
 
     <date year="2026"/>
     <!-- If the month and year are both specified and are the current ones, xml2rfc will fill 
@@ -192,6 +185,8 @@ Specifically, there is no need for a salt because AES-GCM-SIV with random nonces
 	  +--------------------------------+ 
 	  ]]></artwork>
 	</section>
+
+	  
 	
 </middle>
 <back>	
@@ -227,6 +222,11 @@ Specifically, there is no need for a salt because AES-GCM-SIV with random nonces
 	  <xi:include href="https://bib.ietf.org/public/rfc/bibxml/reference.RFC.4302.xml"/>
 	  </references>
    </references>
+
+<section numbered="true" toc="default" anchor="Appendix">
+	<name>Acknowledgements </name>
+	<t>The authors would like to thank Nicholas Gajcowski for his contributions to this draft.</t>
+	</section>
 </back>	
 </rfc>
 	
