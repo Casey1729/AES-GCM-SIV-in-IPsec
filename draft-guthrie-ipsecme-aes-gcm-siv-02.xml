@@ -8,7 +8,7 @@
 <rfc
       xmlns:xi="http://www.w3.org/2001/XInclude"
       category="std"
-      docName="draft-guthrie-ipsecme-aes-gcm-siv-02"
+      docName="draft-guthrie-ipsecme-aes-gcm-siv-03"
       ipr="trust200902"
       obsoletes=""
       updates=""
@@ -34,7 +34,7 @@
         full title is longer than 39 characters -->
 
    <title abbrev="Using AES-GCM-SIV in IKEv2 and ESP">Using AES-GCM-SIV in the Internet Protocol Version 2 (IKEv2) and Encapsulating Security Payload (ESP) Protocols</title>
-    <seriesInfo name="Internet-Draft" value="draft-guthrie-ipsecme-aes-gcm-siv-02"/>
+    <seriesInfo name="Internet-Draft" value="draft-guthrie-ipsecme-aes-gcm-siv-03"/>
     <!-- add 'role="editor"' below for the editors if appropriate -->
 
    <!-- Another author who claims to be an editor -->
