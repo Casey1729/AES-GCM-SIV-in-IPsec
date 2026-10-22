@@ -92,7 +92,7 @@
 	  <name>AES-GCM-SIV Overview</name>
 		  <t>Though AES-GCM-SIV is based on AES-GCM, there are several key differences between the two algorithms; these differences prevent the specifications for AES-GCM in IKEv2 and ESP from directly supporting AES-GCM-SIV. This section gives an overview of these differences and highlights how these differences manifest in the IKEv2 and ESP protocols.</t>
 		  <t>The typical nonce construction for AES-GCM in IKEv2 and ESP is called "partially implicit" (Section 4 of <xref target="RFC5282" />). It consists of a four-octet salt that is part of the IKEv2 keying material shared between parties (the implicit portion, which is not transmitted), followed by the eight-octet Initialization Vector (IV) included in the Encrypted payload (this is the explicit portion; hence "partially" implicit). The IV must be chosen in such a way that is only used once. Note in particular that the IV is defined as a component of this partially implicit nonce.</t>
-		  <t>In contrast, all of the AEAD inputs to AES-GCM-SIV, the 12-octet nonce, the key-generating key, and the associated data, are used to derive the synthetic IV (SIV).  Each AES-GCM-SIV nonce is random, and does not contain a salt.  Specifically, there is no need for a salt because AES-GCM-SIV with random nonces is not vulnerable to multitarget attacks.</t>
+		  <t>In contrast, all of the AEAD inputs to AES-GCM-SIV, the 12-octet nonce, the key-generating key, and the associated data, are used to derive the synthetic IV (SIV).  Each AES-GCM-SIV nonce is recommended to be random, and does not contain a salt.  Specifically, there is no need for a salt because AES-GCM-SIV with random nonces is not vulnerable to multitarget attacks.</t>
 		  <t>Because of these structural differences, IKEv2 and ESP fields specified for AES-GCM nonce and IV cannot be used for the AES-GCM-SIV nonce and SIV without modification.</t>
 		  <t>While the AES-GCM ciphertext (as described in <xref target="RFC5282" />) and AES-GCM-SIV ciphertext both include an authentication tag, the authentication tag for AES-GCM can be 8, 12, or 16 octets. In contrast, the authentication tag for AES-GCM-SIV <bcp14>MUST</bcp14> be 16 octets. This is because the AES-GCM-SIV authentication tag is needed to decrypt the ciphertext, so it must be transmitted in full (i.e., not truncated).</t>
     </section>
@@ -106,10 +106,10 @@
 		<t>The Encrypted payload format for AES-GCM-SIV aligns with the modified format from <xref target="RFC5282" /> with one exception: the Initialization Vector field is now 12-octets in length, which is the value of the AES-GCM-SIV nonce.</t>
 		<t>Then, the Encrypted payload has the following structure:</t>
 		<ul spacing="normal">
-		<li>Initialization Vector: a twelve-octet randomly-generated AES-GCM-SIV nonce, followed by</li>
+		<li>Initialization Vector: a twelve-octet AES-GCM-SIV nonce, followed by</li>
 		<li>Ciphertext: a variable-length ciphertext, which does include the 16-octet tag</li>
 		</ul>
-		<t>The Nonce field contains a randomly-generated 96-bit (12-octet) value.</t>
+		<t>The Nonce field contains a 96-bit (12-octet) value.</t>
 		<t>The Ciphertext field contains the ciphertext as specified by <xref target="RFC8452" />. The ciphertext as specified by <xref target="RFC8452" /> contains a 16-octet authentication tag, making it 16 octets longer than the corresponding plaintext.  The presence of the authentication tag in the Ciphertext field makes it so that a separate Integrity Check Value field in the Encrypted payload is not needed.</t>
 	  </section>
 	  <section numbered="true" toc="default">
@@ -135,7 +135,7 @@
 		<li>IV: a twelve-octet AES-GCM-SIV nonce, followed by</li>
 		<li>Ciphertext: a variable-length ciphertext.</li>
 		</ul>
-		<t>The IV field contains a randomly-generated 96-bit (12-octet) value, and is the value presented to the AES-GCM-SIV implementation as the nonce.</t>
+		<t>The IV field contains a 96-bit (12-octet) value, and is the value presented to the AES-GCM-SIV implementation as the nonce.</t>
 		<t>The Ciphertext field contains the encryption of the padded plaintext, which is the same length as the padded plaintext.</t>
 		<t>Note that, in this description, this does not include the 16 octet tag, which is the ICV.</t>
 	  </section>
@@ -165,6 +165,16 @@
 	<section numbered="true" toc="default">
 	  <name>Security Considerations</name>
 	  <t>This document inherits the security considerations of <xref target="RFC8452" />.</t>
+	     <subsection numbered="true" toc="default">
+		 <name>Nonces and randomness</name>
+		 <t>For GCM-SIV, there are two potential vulnerabilities that can happen if nonces are repeated</t>
+		 <ul spacing="normal">
+		 <li>If the same nonce were used for the same key, then the adversary will be able to determine if the two plaintexts were precisely identical or not</li>
+		 <li>If the same nonce were used for N different keys, then the adversary can use a multitarget attack to find one of the keys to reduce the effort of a brute force attack by a factor of N.</li>
+		 </ul>
+		 <t>Using a counter to generate the nonces would completely eliminate the first vulnerability; however if the counter started at the same value for each SA, then that would increase the probability of the second</t>
+		 <t>Using a random nonce reduces the risk of the second vulnerability (as N will not be that large); but the first becomes possible (if improbable)</t>
+	     </subsection>
 	</section>
 
 	<section numbered="true" toc="default">
