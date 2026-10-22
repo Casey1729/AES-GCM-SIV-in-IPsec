@@ -165,7 +165,7 @@
 	<section numbered="true" toc="default">
 	  <name>Security Considerations</name>
 	  <t>This document inherits the security considerations of <xref target="RFC8452" />.</t>
-	     <subsection numbered="true" toc="default">
+	     <section numbered="true" toc="default">
 		 <name>Nonces and randomness</name>
 		 <t>For GCM-SIV, there are two potential vulnerabilities that can happen if nonces are repeated</t>
 		 <ul spacing="normal">
@@ -174,7 +174,7 @@
 		 </ul>
 		 <t>Using a counter to generate the nonces would completely eliminate the first vulnerability; however if the counter started at the same value for each SA, then that would increase the probability of the second</t>
 		 <t>Using a random nonce reduces the risk of the second vulnerability (as N will not be that large); but the first becomes possible (if improbable)</t>
-	     </subsection>
+	     </section>
 	</section>
 
 	<section numbered="true" toc="default">
