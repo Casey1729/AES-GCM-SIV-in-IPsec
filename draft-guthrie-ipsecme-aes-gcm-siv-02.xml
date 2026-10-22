@@ -170,7 +170,7 @@
 		 <t>For GCM-SIV, the potential vulnerability for reusing the same nonce with the same key is that someone can determine if the two plaintexts are exactly identical (by checking if the ciphertexts are identical).
 			For point-to-point dynamically negotiated keys, this can be addressed by making the nonce based on a counter.
 			However, GCM-SIV is intended for broader use; for example, if there are multiple encryptors sharing the same encryption key, or if there is a static encryption key that survives a reboot.
-			By recommending the use of random nonces, we limit the vulnerability exposed, even in these scenarios.</t> 
+			By recommending the use of random nonces, we limit the vulnerability exposure, even in these scenarios.</t> 
 	     </section>
 	</section>
 
