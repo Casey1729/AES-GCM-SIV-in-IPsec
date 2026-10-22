@@ -167,13 +167,10 @@
 	  <t>This document inherits the security considerations of <xref target="RFC8452" />.</t>
 	     <section numbered="true" toc="default">
 		 <name>Nonces and randomness</name>
-		 <t>For GCM-SIV, there are two potential vulnerabilities that can happen if nonces are repeated</t>
-		 <ul spacing="normal">
-		 <li>If the same nonce were used for the same key, then the adversary will be able to determine if the two plaintexts were precisely identical or not</li>
-		 <li>If the same nonce were used for N different keys, then the adversary can use a multitarget attack to find one of the keys to reduce the effort of a brute force attack by a factor of N.</li>
-		 </ul>
-		 <t>Using a counter to generate the nonces would completely eliminate the first vulnerability; however if the counter started at the same value for each SA, then that would increase the probability of the second</t>
-		 <t>Using a random nonce reduces the risk of the second vulnerability (as N will not be that large); but the first becomes possible (if improbable)</t>
+		 <t>For GCM-SIV, the potential vulnerability for reusing the same nonce with the same key is that someone can determine if the two plaintexts are exactly identical (by checking if the ciphertexts are identical).
+			For point-to-point dynamically negotiated keys, this can be addressed by making the nonce based on a counter.
+			However, GCM-SIV is intended for broader use; for example, if there are multiple encryptors sharing the same encryption key, or if there is a static encryption key that survives a reboot.
+			By recommending the use of random nonces, we limit the vulnerability exposed, even in these scenarios.</t> 
 	     </section>
 	</section>
 
